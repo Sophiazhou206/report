@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>《修一个星球》项目汇报 - 奶油动态版</title>
+    <style>
+        :root {
+            --bg-warm: #fdf5e6; 
+            --theme-orange: #ffb366; 
+            --theme-brown: #8d6e63; 
+            --theme-green: #81c784; 
+            --glass-white: rgba(255, 255, 255, 0.7);
+            --card-shadow: 0 12px 40px rgba(141, 110, 99, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body, html {
+            height: 100%;
+            font-family: 'Rounded Mplus 1c', 'PingFang SC', sans-serif;
+            background-color: var(--bg-warm);
+            color: var(--theme-brown);
+            overflow: hidden;
+        }
+
+        .scroll-container {
+            height: 100vh;
+            overflow-y: auto;
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+
+        section {
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            scroll-snap-align: start;
+            position: relative;
+            padding: 5vh 5vw; /* 增加页面边缘留白 */
+        }
+
+        .content {
+            /* 调整比例：增加宽度占比，让排版更舒展 */
+            max-width: 1400px; 
+            width: 90%;
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+            background: var(--glass-white);
+            backdrop-filter: blur(15px);
+            padding: 60px 80px; /* 增加内部呼吸感 */
+            border-radius: 50px; 
+            border: 6px solid #fff;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+        }
+
+        section.visible .content {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .logo-img {
+            width: 220px;
+            height: 220px;
+            object-fit: cover;
+            margin-bottom: 30px;
+            border-radius: 60px; 
+            border: 8px solid #fff;
+            box-shadow: 0 15px 30px rgba(255,179,102,0.25);
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0); }
+            50% { transform: translateY(-15px) rotate(2deg); }
+        }
+
+        h1 {
+            font-size: 3.5rem; /* 增大标题字号 */
+            color: var(--theme-orange);
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 0px #fff;
+            letter-spacing: 2px;
+        }
+
+        h2 {
+            color: var(--theme-orange);
+            font-size: 2.2rem;
+            margin-bottom: 40px;
+            display: inline-block;
+            padding-bottom: 10px;
+            border-bottom: 4px solid var(--theme-orange);
+        }
+
+        p {
+            font-size: 1.25rem;
+            line-height: 2; /* 增加行间距 */
+            margin-bottom: 25px;
+        }
+
+        /* --- 创作历程时间线优化 --- */
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            position: relative;
+            margin-top: 60px;
+            padding: 40px 0;
+            gap: 20px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 60px;
+            left: 2%;
+            right: 2%;
+            height: 4px;
+            background: var(--theme-orange);
+            border-radius: 10px;
+            opacity: 0.2;
+        }
+
+        .timeline-item {
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+
+        .dot-marker {
+            width: 24px;
+            height: 24px;
+            background: var(--theme-orange);
+            border: 5px solid #fff;
+            border-radius: 50%;
+            margin: -10px auto 25px;
+            box-shadow: 0 0 15px rgba(255,179,102,0.4);
+        }
+
+        .time-date {
+            font-weight: bold;
+            color: var(--theme-orange);
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .time-label {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--theme-brown);
+            margin-bottom: 12px;
+        }
+
+        .time-desc {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #7a6e6a;
+            text-align: left;
+            background: rgba(255,255,255,0.5);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        }
+
+        /* 截图展示优化 */
+        .screenshot-gallery {
+            display: flex;
+            justify-content: center;
+            gap: 40px; /* 增加截图间距 */
+            margin: 40px 0;
+        }
+
+        .screenshot-item {
+            width: 220px; /* 增大截图尺寸 */
+            border-radius: 30px;
+            border: 8px solid #fff;
+            box-shadow: var(--card-shadow);
+            transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .screenshot-item:hover { transform: translateY(-20px) scale(1.08); }
+
+        .nav-dots {
+            position: fixed;
+            right: 30px; top: 50%;
+            transform: translateY(-50%);
+            z-index: 100;
+        }
+        .dot {
+            width: 16px; height: 16px;
+            background: rgba(141, 110, 99, 0.15);
+            border-radius: 50%; margin: 20px 0; cursor: pointer;
+            transition: 0.4s;
+        }
+        .dot.active { background: var(--theme-orange); transform: scale(1.5); }
+
+    </style>
+</head>
+<body>
+
+    <div class="nav-dots">
+        <div class="dot active" onclick="scrollToPage(0)"></div>
+        <div class="dot" onclick="scrollToPage(1)"></div>
+        <div class="dot" onclick="scrollToPage(2)"></div>
+        <div class="dot" onclick="scrollToPage(3)"></div>
+        <div class="dot" onclick="scrollToPage(4)"></div>
+    </div>
+
+    <div class="scroll-container" id="container">
+        
+        <section class="visible">
+            <div class="content">
+                <img src="logo.png" class="logo-img" alt="修一个星球">
+                <h1>修一个星球</h1>
+                <p style="font-size: 1.8rem; font-weight: bold; color: var(--theme-orange); margin-top: 10px;">
+                    温暖治愈的生态修复之旅
+                </p>
+            </div>
+        </section>
+
+        <section>
+            <div class="content">
+                <h2>创作初衷：关注环保与科技、寻求成就感</h2>
+                <div style="display: flex; gap: 60px; align-items: center; text-align: left;">
+                    <div style="flex: 1;">
+                        <p><b>背景故事：</b> 人类启动“绿色星球计划”，玩家通过土地净化将荒芜变为生机盎然的生态基地。</p>
+                        <p><b>设计理念：</b> 将高压下的逻辑挑战转化为亲手复苏星球的情感治愈，满足对共生契约的美好憧憬。</p>
+                        <p><b>持续激励：</b> 拆分大地图区域，每通关一个区域即可解锁新科技与剧情片段，给予持续正向反馈。</p>
+                    </div>
+                    <img src="宣传图.png" style="width: 500px; border-radius: 40px; border: 6px solid #fff; box-shadow: var(--card-shadow);">
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="content">
+                <h2>创作历程：从零到一的蜕变</h2>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="dot-marker"></div>
+                        <div class="time-date">7月18日</div>
+                        <div class="time-label">启动组建</div>
+                        <div class="time-desc">项目启动，跨界团队集结，头脑风暴确定核心玩法与“星球修复”基调。</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="dot-marker"></div>
+                        <div class="time-date">7月下旬</div>
+                        <div class="time-label">概念设计</div>
+                        <div class="time-desc">深入研究游戏概念，完成设计文档初稿，正式提交策划提案。</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="dot-marker"></div>
+                        <div class="time-date">8月整月</div>
+                        <div class="time-label">开发迭代</div>
+                        <div class="time-desc">运用AI工具辅助内容创作，历经多轮内部测试与迭代，Demo系统基本成型。</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="dot-marker"></div>
+                        <div class="time-date">9月上旬</div>
+                        <div class="time-label">发布宣发</div>
+                        <div class="time-desc">设计宣发方案与视觉素材，将小游戏正式发布至TapTap平台测试。</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="dot-marker"></div>
+                        <div class="time-date">9月中下旬</div>
+                        <div class="time-label">运营评估</div>
+                        <div class="time-desc">监控平台数据表现，收集用户关于解谜逻辑的真实反馈，持续打磨体验。</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="content">
+                <h2>游戏界面：治愈系的指尖交互</h2>
+                <div class="screenshot-gallery">
+                    <div class="screenshot-item"><img src="微信图片_20250910094532_28_26.png" style="width:100%; border-radius:22px;"></div>
+                    <div class="screenshot-item"><img src="微信图片_20250910102605_37_26.jpg" style="width:100%; border-radius:22px;"></div>
+                    <div class="screenshot-item"><img src="微信图片_20250910140847_46_26.png" style="width:100%; border-radius:22px;"></div>
+                </div>
+                <p style="margin-top: 30px; font-weight: bold; color: var(--theme-orange);">滑动连起相同图标，直至格子全占满即可通关。</p>
+            </div>
+        </section>
+
+        <section>
+            <div class="content" style="text-align: left;">
+                <h2>项目总结与展望</h2>
+                <div style="background: rgba(255,255,255,0.5); padding: 45px; border-radius: 35px; border: 3px dashed var(--theme-orange); line-height: 2.2;">
+                    <p><b>致谢：</b> 感谢小组成员的支持。跨专业协作让我们在有限时间内补齐短板，完成这场星球修复之旅。</p>
+                    <p><b>反思：</b> 诚然，成品在交互细节、剧情深度及玩法设计上仍有不足，未完全达到预想状态。</p>
+                    <p><b>愿景：</b> 这段历程赋予了我们更广阔的视角。我们将持续改进，并将相关经验收获带到后续工作中。</p>
+                </div>
+                <div style="display: flex; align-items: center; margin-top: 50px; justify-content: center;">
+                    <img src="logo.png" style="width: 100px; height: 100px; border-radius: 25px; border: 4px solid #fff; margin-right: 30px; object-fit: cover;">
+                    <h3 style="font-size: 2rem; color: var(--theme-orange);">感谢聆听，欢迎加入修复大师行列！</h3>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        const container = document.getElementById('container');
+        const sections = document.querySelectorAll('section');
+        const dots = document.querySelectorAll('.dot');
+
+        container.addEventListener('scroll', () => {
+            let current = 0;
+            sections.forEach((section, index) => {
+                if (container.scrollTop >= section.offsetTop - window.innerHeight / 2) {
+                    current = index;
+                }
+            });
+            sections.forEach((section, index) => {
+                section.classList.toggle('visible', index === current);
+            });
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === current);
+            });
+        });
+
+        function scrollToPage(index) {
+            sections[index].scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
